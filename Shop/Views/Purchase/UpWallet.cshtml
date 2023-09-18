@@ -1,0 +1,22 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@using Shop.Data;
+@model AppIdentityUser
+@inject UserManager<AppIdentityUser> UserManager
+@{
+    ViewData["Title"] = "UpWallet";
+}
+
+<h1>Up your Balance, @User.Identity?.Name!</h1>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+		<form asp-controller="Purchase" asp-action="PlusBalance" method="get" class="d-flex">
+			<input class="form-control me-sm-2" id="num" name="num">
+			<button class="btn btn-secondary my-2 my-sm-0" type="submit" id="submit" name="submit">Pay</button>
+		</form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back</a>
+</div>

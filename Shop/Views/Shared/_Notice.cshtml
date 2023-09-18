@@ -1,0 +1,12 @@
+﻿﻿@if (TempData["search"] != null)
+{
+       <h5>
+        Results: @TempData["search"]
+       </h5>
+}
+﻿@if (TempData["cart"] != null)
+{
+    <h5>
+        Added to Cart: @TempData["cart"]
+    </h5>
+}

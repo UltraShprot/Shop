@@ -1,0 +1,72 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@using Shop.Data;
+@model IEnumerable<Shop.Models.Product>
+@inject UserManager<AppIdentityUser> UserManager
+
+@{
+    ViewData["Title"] = "View";
+    decimal finalPrice = 0;
+}
+
+<h1>Cart</h1>
+@if (Model != null)
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>
+                    @Html.DisplayNameFor(model => model.Name)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Description)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Price)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.Count)
+                </th>
+                <th>
+                    @Html.DisplayNameFor(model => model.isAvailable)
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                finalPrice += item.Price;
+                <tr>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Description)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Price)$
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Count)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.isAvailable)
+                    </td>
+                    <td>
+                        <a asp-controller="Purchase" asp-action="DeleteFromCart" asp-route-id="@item.Id">Delete</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+    <div>
+        Your balance: @UserManager.GetUserAsync(User).Result.Money$
+        Price: @finalPrice$
+        <a class="btn btn-secondary" asp-controller="Purchase" asp-action="Buy"> <i class="bi bi-plus-circle"></i> &nbsp;Buy</a> |
+        <a class="btn btn-danger" asp-controller="Purchase" asp-action="ClearCart">Clear Cart</a> 
+    </div>
+}
+else
+{
+    <h5>Cart is empty.</h5>
+}

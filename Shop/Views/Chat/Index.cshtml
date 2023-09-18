@@ -1,0 +1,104 @@
+﻿@using Microsoft.AspNetCore.Identity;
+@using Shop.Data;
+@using Shop.Interfaces;
+@model Tuple<List<AppIdentityUser>, List<Message>, string>
+@inject IMessageService _messageService;
+@inject UserManager<AppIdentityUser> userManager
+@{
+	var _user = await userManager.GetUserAsync(User);
+	bool disable;
+}
+<div class="row">
+	<div class="col-md-3">
+		<ul class="nav nav-pills flex-column">
+		@foreach (var user in Model.Item1)
+			{
+				string btn = "btn btn-primary my-2 my-sm-0";
+				if (user.Id == Model.Item3)
+				{
+					btn = "btn btn-secondary my-2 my-sm-0";
+				}
+			<form asp-controller="Chat" asp-action="Index" method="get" class="d-flex">
+					<input type="hidden" id="userId" name="userId" value="@user.Id" />
+					<button class="@btn" type="submit" id="submit" name="submit">@user.UserName</button>
+			</form>
+		}
+		</ul>
+	</div>
+	<div class="col-md-9">
+		<div class="bg-dark">
+			<h2 class="text-center text-primary">Chat</h2>
+			<div class="row">
+				<div class="col-md-12" id="chat">
+					@if (Model.Item2 != null)
+					{
+						@foreach (var message in Model.Item2.OrderBy(m => m.When))
+						{
+							string containerClass, timePosition, textAlign, contcolor, offset;
+							if (_user.Id == message.FromUserId)
+							{
+								containerClass = "container darker";
+								timePosition = "time-right text-light";
+								textAlign = "text-right text-white";
+								contcolor = "bg-primary";
+								offset = "col-md-6 offset-md-6";
+							}
+							else
+							{
+								containerClass = "container";
+								timePosition = "time-left";
+								textAlign = "text-left text-info";
+								contcolor = "bg-light";
+								offset = "";
+							}
+							<div class="row">
+								<div class="@offset">
+									<div class="@containerClass @contcolor">
+										<p class="sender @textAlign">@message.UserName</p>
+										<p class="@textAlign">@message.Text</p>
+										<span class="@timePosition">@message.When.ToString()</span>
+									</div>
+								</div>
+							</div>
+						}
+					}
+				</div>
+				@if (string.IsNullOrEmpty(Model.Item3))
+				{
+					disable = true;
+				}
+				else
+				{
+					disable = false;
+				}
+				<div class="col-md-12">
+					<form asp-action="Create"
+						  data-ajax-begin="clearInputField" data-ajax-complete=""
+						  data-ajax-failure="alert('Fail')" data-ajax-success="sendMessage"
+						  data-ajax="true" data-ajax-method="POST">
+						<div asp-validation-summary="ModelOnly" class="text-danger"></div>
+						<div class="form-group">
+							<input name="Text" class="form-control" id="messageText" />
+						</div>
+						<div class="form-group text-center">
+							<input type="submit" value="Send" id="submitButton" class="btn btn-primary" disabled="@(disable ? "disabled" : null)" />
+						</div>
+						<input type="hidden" value="@_user.UserName" name="username"/>
+						
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+	const userName = "@_user.UserName";
+</script>
+
+@section scripts
+{
+	<script src="~/signalr/signalr.min.js"></script>
+	<script src="~/lib/jquery/dist/jquery.unobtrusive-ajax.min.js"></script>
+	<script src="~/js/chat.js"></script>
+	<script src="~/js/signalrReqHandler.js"></script>
+}

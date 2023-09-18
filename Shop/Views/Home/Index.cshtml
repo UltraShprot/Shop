@@ -1,0 +1,34 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Shop.Data;
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+@inject UserManager<AppIdentityUser> UserManager
+@inject SignInManager<AppIdentityUser> SignInManager
+
+<div class="text-center">
+    @if (SignInManager.IsSignedIn(User))
+    {
+        <div>
+            <h1 class="display-4">Welcome, @User.Identity?.Name!</h1>
+            <p>Buy something...</p>
+        </div>
+    }
+    else
+    {
+        <div>
+            <h1 class="display-4">Welcome!</h1>
+            <p>
+
+                    <a class="btn btn-link my-2 my-sm-0" asp-area="Identity" asp-page="/Account/Register">Register</a>
+                    or 
+                    <a class=" btn btn-link my-2 my-sm-0" asp-area="Identity" asp-page="/Account/Login">Login</a>
+
+            </p>
+        </div>
+    }
+</div>
+<div class ="text-center">
+    <img src="~/images/1.jpg" class="mainImage" />
+</div>

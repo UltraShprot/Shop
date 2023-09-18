@@ -1,0 +1,109 @@
+﻿@using Microsoft.AspNetCore.Identity
+@using Shop.Data;
+@using Shop.Interfaces;
+@inject SignInManager<AppIdentityUser> SignInManager
+@inject UserManager<AppIdentityUser> UserManager
+@inject IProductService _productService
+@model Tuple<List<Product>, List<Category>>
+@{
+	ViewData["Title"] = "Shop";
+}
+
+<div class="container p-3">
+	<div class="row pt-4">
+		<h2 class="text-primary">Shop</h2>
+		<div class="col-6 text-end">
+			<form asp-controller="Shop" asp-action="Index" method="get" class="d-flex">
+				<input class="form-control me-sm-2" type="search" placeholder="Search" id="searchString"  value="@_productService.GetSearchString()" name="searchString">
+				<button class="btn btn-secondary my-2 my-sm-0" type="submit" id="submit" name="submit">Search</button>
+			</form>
+	</div>
+			</div>
+		@if (await UserManager.IsInRoleAsync(await UserManager.GetUserAsync(User), "Administrator"))
+			{
+			<div class="col-12">
+				<a asp-controller="Shop" asp-action="Create" class="btn btn-primary">
+				<i class="bi bi-plus-circle"></i> &nbsp; Create New Product
+					<a asp-controller="Shop" asp-action="CreateCategory" class="btn btn-primary">
+						<i class="bi bi-plus-circle"></i> &nbsp; Create New Category
+					</a>
+			</a>
+		</div>}
+	<div>
+		@if (Model.Item2 != null)
+		{
+			foreach (var category in Model.Item2)
+			{
+				if (_productService.IsCategorySelested(category).Data)
+				{
+					<a asp-controller="Shop" asp-action="ChooseCategory" asp-route-id="@category.Id" class="btn btn-link bg-dark">
+						@category.Name
+					</a>
+				}
+				else
+				{
+					<a asp-controller="Shop" asp-action="ChooseCategory" asp-route-id="@category.Id" class="btn btn-link">
+						<i class="bi bi-plus-circle"></i>  @category.Name
+					</a>
+					@if (await UserManager.IsInRoleAsync(await UserManager.GetUserAsync(User), "Administrator"))
+					{
+						<a asp-controller="Shop" asp-action="DeleteCategory" asp-route-id="@category.Id" class="btn btn-danger">
+							<i class="bi bi-minus-circle"></i> &nbsp; Delete Category
+						</a>
+					}
+				}
+			}
+		}
+	</div>
+	<br /><br />
+</div>
+<div class-"container">
+	<div class="row">
+		<div class="col-12 mb-5 mt-5"></div>
+	@if (Model.Item1 != null)
+	{
+		foreach (var item in Model.Item1)
+		{
+			var imagePath = "/uploads/" + item.ImageName;
+
+			<div class="col-4 mb-5">
+				@if (item.isAvailable)
+				{
+					<a class="productImage" asp-area="" asp-controller="Shop" asp-action="Details"
+					   asp-route-id="@item.Id">
+					<img src="@imagePath" class="w-100" asp-append-version="true" />
+				    </a>
+				}
+				else 
+				{
+						<a class="productImageNotAvaiable" asp-area="" asp-controller="Shop" asp-action="Details"
+						   asp-route-id="@item.Id">
+							<img src="@imagePath" class="w-100" asp-append-version="true" />
+						</a>
+				}
+					<h5 class="text-secondary">@item.Name</h5>
+					<h6 class="text-bg-info">@item.Price$</h6>
+
+				<br />
+				@if (item.isAvailable)
+				{
+				<a asp-controller="Shop" asp-action="AddToCart" asp-route-id="@item.Id" class="btn btn-secondary">
+					<i class="bi bi-plus-circle"></i> &nbsp; Add To Cart
+				</a>
+				}
+				@if (await UserManager.IsInRoleAsync(await UserManager.GetUserAsync(User), "Administrator"))
+				{
+					<a asp-controller="Shop" asp-action="Delete" asp-route-id="@item.Id" class="btn btn-danger">
+						Delete
+					</a>
+				    <a asp-controller="Shop" asp-action="Update" asp-route-id="@item.Id" class="btn btn-danger">
+						Update
+					</a>
+				}
+			</div>
+		}
+
+	}
+	</div>
+</div>
+

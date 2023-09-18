@@ -1,0 +1,58 @@
+﻿@page
+@using Shop.Models;
+@model History
+@inject UserManager<AppIdentityUser> UserManager
+@{
+    ViewData["Title"] = "History";
+    ViewData["ActivePage"] = ManageNavPages.History;
+}
+
+<h3>@ViewData["Title"]</h3>
+@if (Model != null)
+{
+    if (Model.HistoryResult != null)
+    {
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>
+                        @Html.DisplayNameFor(model => model.HistoryResult.ToList()[0].Name)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.HistoryResult.ToList()[0].Description)
+                    </th>
+                    <th>
+                        @Html.DisplayNameFor(model => model.HistoryResult.ToList()[0].Price)
+                    </th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model.HistoryResult)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Name)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Description)
+                        </td>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Price)$
+                        </td>
+                        <td>
+                            <a asp-controller="Shop" asp-action="Details" asp-route-id="@item.Id">Details</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>}
+}
+else
+{
+    <h5>Cart is empty.</h5>
+}
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
